@@ -1,0 +1,71 @@
+.container {
+  overflow-y: auto;
+  display: flex;
+}
+
+@rowHeight: 30px;
+
+.notes {
+  // max-width: 400px;
+  // overflow-x: auto;
+}
+.notes-row {
+  height: @rowHeight;
+  display: flex;
+  position: relative;
+}
+.item-grid {
+  display: flex;
+  position: absolute;
+  height: 100%;
+}
+.item-notes {
+  display: flex;
+  pointer-events: none;
+}
+.item {
+  border: 2px solid rgb(235, 238, 241);
+  background-color: white;
+}
+.item-note {
+  background-color: rgb(241, 219, 222);
+}
+.item--active {
+  filter: brightness(0.95);
+}
+
+.key {
+  color: rgb(44, 56, 68);
+  font-weight: bold;
+  font-size: 12px;
+  height: @rowHeight;
+  width: 92px;
+  border: 2px solid rgb(235, 238, 241);
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+.key-code {
+  font-size: 10px;
+  opacity: 0.6;
+}
+.key--pitch {
+  color: white;
+  background-color: #303133;
+}
+.key--active {
+  color: rgb(44, 56, 68);
+  background-color: rgb(241, 219, 222);
+}
+
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 300px;
+  padding: 24px;
+  font-weight: bold;
+}
