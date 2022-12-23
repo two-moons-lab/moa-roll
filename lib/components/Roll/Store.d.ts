@@ -1,13 +1,14 @@
 /// <reference types="react" />
-import * as Tone from 'tone';
+import * as Tone from "tone";
 import { Unit } from "tone";
-import { Note } from 'typings/common';
-export declare type Status = 'stop' | 'playing';
-export declare type Track = {
+import { Note } from "typings/common";
+import { BaseInstrument } from "../instruments/base";
+export type Status = "stop" | "playing";
+export type Track = {
     instrument: string;
     notes: Note[];
 };
-export declare type RollState = {
+export type RollState = {
     length: number;
     currentTrack: string;
     keyboardOctive: number;
@@ -31,9 +32,9 @@ export declare class RollStore {
     tracks: Track[];
     bpm: number;
     activeKeys: Record<string, string[]>;
-    instrument: Record<string, Tone.PolySynth>;
+    instrument: Record<string, BaseInstrument>;
     keyboards: Record<string, React.FC>;
-    registInstrument: (name: string, instrument: Tone.PolySynth, component: React.FC) => void;
+    registInstrument: (name: string, instrument: BaseInstrument, component: React.FC) => void;
     constructor(initialState: Partial<RollState> | undefined);
     changeTrack: (instrument: string) => void;
     setData: (initialState: Partial<RollState> | undefined) => void;

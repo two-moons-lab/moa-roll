@@ -3,7 +3,7 @@ export interface ContainerProviderProps<State = void> {
     initialState?: State;
     children: React.ReactNode;
 }
-export declare type Container<Value, State = void> = [
+export type Container<Value, State = void> = [
     () => Value,
     React.ComponentType<ContainerProviderProps<State>>
 ];

@@ -1,13 +1,13 @@
-import React from 'react';
-import { RollState, RollStore } from './Store';
+import React from "react";
+import { RollState, RollStore } from "./Store";
 export declare const RollContext: React.Context<RollStore>;
-declare type RollProps = {
+type RollProps = {
     height?: number;
     data?: Partial<RollState>;
-    showController: boolean;
-    modelRef?: React.MutableRefObject<ModelRef>;
+    showController?: boolean;
+    modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
 };
-export declare type ModelRef = {
+export type ModelRef = {
     play: () => void;
     stop: () => void;
     start: () => void;
