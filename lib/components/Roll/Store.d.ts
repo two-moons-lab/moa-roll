@@ -1,12 +1,13 @@
 /// <reference types="react" />
 import * as Tone from "tone";
 import { Unit } from "tone";
-import { Note } from "typings/common";
+import { Note, NoteOnlyValue } from "typings/common";
 import { BaseInstrument } from "../instruments/base";
 export type Status = "stop" | "playing";
 export type Track = {
     instrument: string;
     notes: Note[];
+    range?: [string, string];
 };
 export type RollState = {
     length: number;
@@ -34,6 +35,7 @@ export declare class RollStore {
     activeKeys: Record<string, string[]>;
     instrument: Record<string, BaseInstrument>;
     keyboards: Record<string, React.FC>;
+    events: Record<string, Function | undefined>;
     registInstrument: (name: string, instrument: BaseInstrument, component: React.FC) => void;
     constructor(initialState: Partial<RollState> | undefined);
     changeTrack: (instrument: string) => void;
@@ -46,8 +48,8 @@ export declare class RollStore {
     play: () => void;
     stop: () => void;
     trigNote: (name: string, note: Note, time: Unit.Time) => void;
-    attackNote: (name: string, note: Note, time?: Unit.Time) => void;
-    releaseNote: (name: string, note: Note, time?: Unit.Time) => void;
+    attackNote: (name: string, note: NoteOnlyValue, time?: Unit.Time) => void;
+    releaseNote: (name: string, note: NoteOnlyValue, time?: Unit.Time) => void;
     setBpm: (value: number) => void;
     trigInstruments: (time: Unit.Time) => void;
 }

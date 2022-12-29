@@ -1,7 +1,11 @@
-import { computed, makeObservable } from "mobx";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { RollStore } from "../../Roll/Store";
-import { getNoteWithOctive, genKeys } from "../../../utils/note";
-import { isNumber } from "lodash";
+import {
+  getNoteWithOctive,
+  genKeys,
+  getFullNoteStr,
+} from "../../../utils/note";
+import { isEqual, isNumber, remove } from "lodash";
 import { Drum } from "../../instruments/drum";
 import { Note } from "typings/common";
 
@@ -24,25 +28,29 @@ const NAMES = [
 ];
 
 export const genKeysFnMap = {
-  default(notes: Note[]) {
-    return genKeys(notes);
+  default(noteValues: string[], range?: string[]) {
+    return genKeys(noteValues, range);
   },
-  drum(_) {
+  drum() {
     return Drum.getDrumKitKeys();
   },
 };
+
 export class KeyboardStore {
   contextStore: RollStore;
 
-  constructor(context: RollStore, initState?: Partial<KeyboardState>) {
-    Object.assign(this, initState);
+  instrument: string;
+  constructor(context: RollStore, instrument: string) {
+    Object.assign(this, {
+      instrument,
+    });
     this.contextStore = context;
     makeObservable(this);
   }
 
   keyStatusMap: Record<string, boolean> = {};
 
-  @computed
+  @computed // note到键盘key的映射
   get noteToKeyMap() {
     const re: Record<string, string> = {};
 
@@ -73,14 +81,60 @@ export class KeyboardStore {
     return re;
   }
 
-  clearNote = () => {};
+  @observable writeState = {
+    startNote: <undefined | Note>undefined,
+  };
 
-  onMouseDown = () => {};
+  clearExistNote = (note: Note) => {
+    const currNotes = this.contextStore.tracks.find(
+      (track) => track.instrument === this.instrument
+    )?.notes as Note[];
 
-  onMouseEnter = () => {};
+    let matchExistNote: Note | undefined;
+    if (
+      (matchExistNote = currNotes.find((currNote) => {
+        if (getFullNoteStr(currNote.value) === note.value) {
+          if (currNote.duration) {
+            if (
+              currNote.time <= note.time &&
+              note.time <= currNote.time + currNote.duration - 1
+            )
+              return true;
+          } else return currNote.time === note.time;
+        }
+        return false;
+      }))
+    ) {
+      return currNotes.splice(currNotes.indexOf(matchExistNote), 1);
+    }
+  };
 
-  onMouseUp = () => {};
+  @action
+  setStartNote = (note: Note) => {
+    if (this.clearExistNote(note)) return;
+    this.writeState.startNote = note;
+  };
 
+  @action
+  setEndNote = (note: Note) => {
+    const { startNote } = this.writeState;
+    if (!startNote || note.value !== startNote.value) return;
+
+    const currNotes = this.contextStore.tracks.find(
+      (track) => track.instrument === this.instrument
+    )?.notes as Note[];
+
+    currNotes.splice(note.time, 0, {
+      value: note.value,
+      time: Math.min(note.time, startNote.time),
+      duration: Math.abs(note.time - startNote.time) + 1,
+    });
+    this.writeState.startNote = undefined;
+  };
+
+  onMouseEnter = (note: Note) => {};
+
+  @action
   onKeydown = (event: KeyboardEvent) => {
     const code = event.code;
     if (this.keyStatusMap[code] === true) return;

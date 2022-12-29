@@ -1,5 +1,6 @@
 export type Note = {
     value: string;
-    time?: number;
+    time: number;
     duration?: number;
 };
+export type NoteOnlyValue = Omit<Note, "time" | "duration">;

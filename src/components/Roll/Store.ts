@@ -3,7 +3,7 @@ import _ from "lodash";
 import { action, makeObservable, observable, computed } from "mobx";
 import * as Tone from "tone";
 import { Unit } from "tone";
-import { Note } from "typings/common";
+import { Note, NoteOnlyValue } from "typings/common";
 import { getFullNoteStr } from "../../utils/note";
 import { CommonKeyboard } from "../keyboards/Common";
 import { BaseInstrument } from "../instruments/base";
@@ -13,6 +13,7 @@ export type Status = "stop" | "playing";
 export type Track = {
   instrument: string;
   notes: Note[];
+  range?: [string, string];
 };
 
 export type RollState = {
@@ -44,6 +45,10 @@ export class RollStore {
 
   instrument: Record<string, BaseInstrument> = {};
   keyboards: Record<string, React.FC> = {};
+
+  events: Record<string, Function | undefined> = {
+    onPlayEnd: undefined,
+  };
 
   registInstrument = (
     name: string,
@@ -92,6 +97,7 @@ export class RollStore {
     const maxValues: number[] = [];
     this.tracks.forEach((track) => {
       const notes = track.notes as { time: number }[];
+      if (!notes.length) return;
       maxValues.push(
         notes.slice().sort((a, b) => a.time - b.time)[notes.length - 1].time + 1
       );
@@ -123,18 +129,19 @@ export class RollStore {
   stop = () => {
     if (this.status === "stop") return;
 
+    this.events.onPlayEnd && this.events.onPlayEnd();
     this.status = "stop";
-    Tone.Transport.cancel();
+    Tone.Transport.cancel(); // 取消之前的schedule repeat
     for (let name in this.instrument) {
       const instrment = this.instrument[name];
-      instrment.releaseAll();
+      instrment.releaseAll(); // release所有乐器
     }
 
     for (let name in this.activeKeys) {
       this.activeKeys[name] = [];
     }
 
-    Tone.Transport.stop();
+    Tone.Transport.stop(); // 停止schedule repeat
 
     this.step = -1;
   };
@@ -142,15 +149,17 @@ export class RollStore {
   trigNote = (name: string, note: Note, time: Unit.Time) => {
     this.attackNote(name, note, time);
 
-    const { duration } = note;
+    const { duration = 1 } = note;
     Tone.Transport.schedule(
       (time) => this.releaseNote(name, note, time),
-      duration ? `+${Tone.Time("4n").toSeconds() * duration}` : "+4n"
+      `+${
+        Tone.Time("4n").toSeconds() * duration - Tone.Time("16n").toSeconds()
+      }`
     );
   };
 
   @action
-  attackNote = (name: string, note: Note, time?: Unit.Time) => {
+  attackNote = (name: string, note: NoteOnlyValue, time?: Unit.Time) => {
     const currentInstrument = this.instrument[name];
     let fullNoteStr;
     if (currentInstrument.isNoise) fullNoteStr = note.value;
@@ -165,7 +174,7 @@ export class RollStore {
   };
 
   @action
-  releaseNote = (name: string, note: Note, time?: Unit.Time) => {
+  releaseNote = (name: string, note: NoteOnlyValue, time?: Unit.Time) => {
     const currentInstrument = this.instrument[name];
     let fullNoteStr;
     if (currentInstrument.isNoise) fullNoteStr = note.value;

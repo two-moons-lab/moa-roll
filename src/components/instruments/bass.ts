@@ -4,7 +4,7 @@ import * as Tone from "tone";
 export class Bass implements BaseInstrument {
   synth = new Tone.PolySynth().toDestination();
   releaseAll(): void {
-    this.synth.releaseAll;
+    this.synth.releaseAll();
   }
   triggerAttack(value: string, time: Tone.Unit.Time | undefined): void {
     this.synth.triggerAttack(value, time);

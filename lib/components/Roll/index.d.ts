@@ -6,6 +6,7 @@ type RollProps = {
     data?: Partial<RollState>;
     showController?: boolean;
     modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
+    onPlayEnd?: () => void;
 };
 export type ModelRef = {
     play: () => void;

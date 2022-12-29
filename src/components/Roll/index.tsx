@@ -14,6 +14,7 @@ type RollProps = {
   data?: Partial<RollState>;
   showController?: boolean;
   modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
+  onPlayEnd?: () => void;
 };
 
 export type ModelRef = {
@@ -31,6 +32,7 @@ export class Roll extends React.Component<RollProps> {
   constructor(props: RollProps) {
     super(props);
     this.store = new RollStore(props.data);
+    this.store.events.onPlayEnd = props.onPlayEnd;
 
     if (props.modelRef) {
       const ref = {
@@ -84,7 +86,8 @@ export class Roll extends React.Component<RollProps> {
           <div className={styles.content}>
             {React.createElement(store.keyboards[store.currentTrack], {
               instrument: store.currentTrack,
-              notes: currentTrackData.notes,
+              notes: currentTrackData.notes ?? [],
+              range: currentTrackData.range,
               activeKeys: store.activeKeys[store.currentTrack],
               key: store.currentTrack,
               size: {
