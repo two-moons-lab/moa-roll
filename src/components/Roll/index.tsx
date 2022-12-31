@@ -4,7 +4,7 @@ import { RollState, RollStore, Track } from "./Store";
 import { observer } from "mobx-react";
 import classNames from "classnames";
 import { Controller } from "../Controller/index";
-import { isFunction } from "lodash";
+import { cloneDeep, isFunction } from "lodash";
 
 export const RollContext = createContext<RollStore>(null);
 
@@ -17,12 +17,15 @@ type RollProps = {
   onPlayEnd?: () => void;
 };
 
+export type RollData = Partial<RollState>;
+
 export type ModelRef = {
   play: () => void;
   stop: () => void;
   start: () => void;
 
-  setData: (data: Partial<RollState>) => void;
+  getData: () => RollData;
+  setData: (data: RollData) => void;
 };
 
 @observer
@@ -40,6 +43,12 @@ export class Roll extends React.Component<RollProps> {
         stop: this.store.stop,
         start: this.store.start,
         setData: this.store.setData,
+        getData: () =>
+          cloneDeep({
+            timeLength: this.store.timeLength,
+            currentTrack: this.store.currentTrack,
+            tracks: this.store.tracks,
+          }),
         changeTrack: this.store.changeTrack,
       };
 

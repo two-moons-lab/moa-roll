@@ -4,6 +4,7 @@
 }
 
 @rowHeight: 30px;
+@colorPrimary: rgb(33, 41, 55);
 
 .notes {
   // max-width: 400px;
@@ -28,14 +29,14 @@
   background-color: white;
 }
 .item-note {
-  background-color: rgb(241, 219, 222);
+  background-color: rgba(@colorPrimary, 0.3);
 }
 .item--active {
   filter: brightness(0.95);
 }
 
 .key {
-  color: rgb(44, 56, 68);
+  color: @colorPrimary;
   font-weight: bold;
   font-size: 12px;
   height: @rowHeight;
@@ -53,11 +54,11 @@
 }
 .key--pitch {
   color: white;
-  background-color: #303133;
+  background-color: @colorPrimary;
 }
 .key--active {
-  color: rgb(44, 56, 68);
-  background-color: rgb(241, 219, 222);
+  color: @colorPrimary;
+  background-color: rgba(@colorPrimary, 0.3);
 }
 
 .empty {

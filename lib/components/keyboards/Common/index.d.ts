@@ -4,7 +4,7 @@ export declare const CommonKeyboard: React.FC<{
     instrument: string;
     notes: Note[];
     activeKeys: string[];
-    range?: string[];
+    range?: [string, string];
     size: {
         width: number;
         height: number;

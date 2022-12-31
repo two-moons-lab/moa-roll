@@ -12,7 +12,7 @@ export const CommonKeyboard: React.FC<{
   instrument: string;
   notes: Note[];
   activeKeys: string[];
-  range?: string[];
+  range?: [string, string];
   size: {
     width: number;
     height: number;
@@ -34,7 +34,11 @@ export const CommonKeyboard: React.FC<{
     return () => keyboardStore.unmountKeyboardEvents();
   }, [store.keyboardOctive]);
 
-  if (!notes.length && !(store.timeLength && range))
+  if (
+    !notes.length &&
+    !(store.timeLength && range) &&
+    !store.instrument[instrument].isNoise
+  )
     return <div className={styles.empty}>NO DATA</div>;
 
   const Notes: React.FC<{ notes: Note[]; value: string }> = observer(

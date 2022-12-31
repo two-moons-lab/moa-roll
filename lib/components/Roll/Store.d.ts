@@ -14,7 +14,6 @@ export type RollState = {
     currentTrack: string;
     keyboardOctive: number;
     step: number;
-    range: [string, string];
     timeLength: number | undefined;
     tracks: Track[];
     activeKeys: Record<string, string[]>;
@@ -39,7 +38,7 @@ export declare class RollStore {
     registInstrument: (name: string, instrument: BaseInstrument, component: React.FC) => void;
     constructor(initialState: Partial<RollState> | undefined);
     changeTrack: (instrument: string) => void;
-    setData: (initialState: Partial<RollState> | undefined) => void;
+    setData: (data: Partial<RollState> | undefined) => void;
     setKeyboardOctive: (value: number) => void;
     init: () => void;
     get defaultTimeLength(): number;

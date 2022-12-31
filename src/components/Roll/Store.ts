@@ -21,7 +21,6 @@ export type RollState = {
   currentTrack: string;
   keyboardOctive: number;
   step: number;
-  range: [string, string];
   timeLength: number | undefined;
   tracks: Track[];
   activeKeys: Record<string, string[]>;
@@ -76,8 +75,8 @@ export class RollStore {
   };
 
   @action
-  setData = (initialState: Partial<RollState> | undefined) => {
-    Object.assign(this, initialState);
+  setData = (data: Partial<RollState> | undefined) => {
+    Object.assign(this, data);
     Tone.Transport.bpm.value = this.bpm;
   };
 

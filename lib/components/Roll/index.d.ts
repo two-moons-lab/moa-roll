@@ -8,11 +8,13 @@ type RollProps = {
     modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
     onPlayEnd?: () => void;
 };
+export type RollData = Partial<RollState>;
 export type ModelRef = {
     play: () => void;
     stop: () => void;
     start: () => void;
-    setData: (data: Partial<RollState>) => void;
+    getData: () => RollData;
+    setData: (data: RollData) => void;
 };
 export declare class Roll extends React.Component<RollProps> {
     store: RollStore;
