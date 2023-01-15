@@ -57,10 +57,10 @@ export class RollStore {
     this.instrument[name] = instrument;
     this.keyboards[name] = component;
     this.activeKeys[name] = [];
-    this.tracks.push({
-      instrument: name,
-      notes: [],
-    });
+    // this.tracks.push({
+    //   instrument: name,
+    //   notes: [],
+    // });
   };
 
   constructor(initialState: Partial<RollState> | undefined) {
