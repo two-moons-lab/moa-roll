@@ -17,7 +17,6 @@ export type Track = {
 };
 
 export type RollState = {
-  length: number;
   currentTrack: string;
   keyboardOctive: number;
   step: number;
@@ -36,10 +35,10 @@ export class RollStore {
   @observable currentTrack = "piano";
   @observable step = -1;
   @observable keyboardOctive: number = 4;
-  @observable timeLength = undefined;
+  @observable timeLength: RollState["timeLength"] = undefined;
   @observable status: Status = "stop";
   @observable tracks: Track[] = [];
-  @observable bpm: number = 190;
+  @observable bpm: number = 90;
   @observable activeKeys: Record<string, string[]> = {};
 
   instrument: Record<string, BaseInstrument> = {};
@@ -121,7 +120,7 @@ export class RollStore {
     this.start();
 
     this.status = "playing";
-    Tone.Transport.scheduleRepeat(this.trigInstruments, "4n");
+    Tone.Transport.scheduleRepeat(this.trigInstruments, "8n");
   };
 
   @action
@@ -152,7 +151,7 @@ export class RollStore {
     Tone.Transport.schedule(
       (time) => this.releaseNote(name, note, time),
       `+${
-        Tone.Time("4n").toSeconds() * duration - Tone.Time("16n").toSeconds()
+        Tone.Time("8n").toSeconds() * duration - Tone.Time("32n").toSeconds()
       }`
     );
   };
@@ -190,6 +189,9 @@ export class RollStore {
   @action setBpm = (value: number) => {
     this.bpm = value;
     Tone.Transport.bpm.value = value;
+  };
+  @action setTimeLenth = (value: number) => {
+    this.timeLength = value;
   };
 
   @action

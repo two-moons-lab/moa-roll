@@ -1,3 +1,5 @@
+@colorPrimary: rgb(33, 41, 55);
+
 .controller {
   display: flex;
   flex-direction: column;
@@ -6,15 +8,12 @@
   font-size: 12px;
   padding: 8px;
   border-top: rgb(44, 56, 68) 2px solid;
-}
-
-.keyboard {
+  background-color: white;
 }
 
 .btn {
   background-color: white;
-  color: rgb(196, 80, 94);
-  border: 2px solid rgb(196, 80, 94);
+  border: 2px solid @colorPrimary;
   font-size: 12px;
   font-weight: bold;
   cursor: pointer;
@@ -22,12 +21,13 @@
   width: 100%;
   padding: 4px;
   &:hover {
-    background-color: rgb(196, 80, 94);
+    background-color: @colorPrimary;
     color: white;
   }
 }
 .controller {
   input {
     width: 100%;
+    accent-color: @colorPrimary;
   }
 }

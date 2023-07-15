@@ -84,6 +84,7 @@ export const CommonKeyboard: React.FC<{
                 };
                 return (
                   <div
+                    key={index}
                     onMouseDown={() => setStartNote(currNote)}
                     onMouseUp={() => setEndNote(currNote)}
                     onMouseEnter={() => onMouseEnter(currNote)}
@@ -96,9 +97,10 @@ export const CommonKeyboard: React.FC<{
           </div>
 
           <div className={styles["item-notes"]}>
-            {items.map((item) => {
+            {items.map((item, index) => {
               return (
                 <div
+                  key={index}
                   className={classNames(
                     styles.item,
                     item.type === "note" && styles["item-note"],
@@ -129,6 +131,7 @@ export const CommonKeyboard: React.FC<{
         {keys?.map((keyName) => {
           return (
             <div
+              key={keyName}
               className={classNames(
                 styles.key,
                 activeKeys.includes(keyName) && styles["key--active"],
@@ -148,6 +151,7 @@ export const CommonKeyboard: React.FC<{
         {keys?.map((keyName) => {
           return (
             <Notes
+              key={keyName}
               value={keyName}
               notes={notes.filter((note) => {
                 const currentInstrument = store.instrument[instrument];

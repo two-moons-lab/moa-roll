@@ -10,7 +10,6 @@ export type Track = {
     range?: [string, string];
 };
 export type RollState = {
-    length: number;
     currentTrack: string;
     keyboardOctive: number;
     step: number;
@@ -27,7 +26,7 @@ export declare class RollStore {
     currentTrack: string;
     step: number;
     keyboardOctive: number;
-    timeLength: undefined;
+    timeLength: RollState["timeLength"];
     status: Status;
     tracks: Track[];
     bpm: number;
@@ -50,5 +49,6 @@ export declare class RollStore {
     attackNote: (name: string, note: NoteOnlyValue, time?: Unit.Time) => void;
     releaseNote: (name: string, note: NoteOnlyValue, time?: Unit.Time) => void;
     setBpm: (value: number) => void;
+    setTimeLenth: (value: number) => void;
     trigInstruments: (time: Unit.Time) => void;
 }

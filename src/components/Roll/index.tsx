@@ -92,18 +92,20 @@ export class Roll extends React.Component<RollProps> {
             {this.props.showController && <Controller />}
           </div>
           {/* 这里将notes作为props传入的原因是对于单一的instrument来说它并不需要考虑其他的track, 但trigKeys却是所有instrument都可用的状态 */}
-          <div className={styles.content}>
-            {React.createElement(store.keyboards[store.currentTrack], {
-              instrument: store.currentTrack,
-              notes: currentTrackData.notes ?? [],
-              range: currentTrackData.range,
-              activeKeys: store.activeKeys[store.currentTrack],
-              key: store.currentTrack,
-              size: {
-                width: this.props.width,
-                height: this.props.height,
-              },
-            } as any)}
+          <div className={styles.wrapper}>
+            <div className={styles.content}>
+              {React.createElement(store.keyboards[store.currentTrack], {
+                instrument: store.currentTrack,
+                notes: currentTrackData.notes ?? [],
+                range: currentTrackData.range,
+                activeKeys: store.activeKeys[store.currentTrack],
+                key: store.currentTrack,
+                size: {
+                  width: this.props.width,
+                  height: this.props.height,
+                },
+              } as any)}
+            </div>
           </div>
         </div>
       </RollContext.Provider>
