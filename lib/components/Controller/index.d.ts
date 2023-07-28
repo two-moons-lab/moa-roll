@@ -1,2 +1,2 @@
-/// <reference types="react" />
-export declare const Controller: () => JSX.Element;
+import React from "react";
+export declare const Controller: () => React.JSX.Element;

@@ -5,8 +5,5 @@ export declare const CommonKeyboard: React.FC<{
     notes: Note[];
     activeKeys: string[];
     range?: [string, string];
-    size: {
-        width: number;
-        height: number;
-    };
+    maxWidth: number | string;
 }>;

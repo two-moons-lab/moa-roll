@@ -8,16 +8,18 @@ import { useContext, useEffect, useState } from "react";
 import { RollContext } from "../../Roll/index";
 import { KeyboardStore, genKeysFnMap } from "./Store";
 
+const getSingleNoteStr = (str: string) => {
+  if (str.includes("/")) return str.split("/")[0];
+  else return str;
+};
+
 export const CommonKeyboard: React.FC<{
   instrument: string;
   notes: Note[];
   activeKeys: string[];
   range?: [string, string];
-  size: {
-    width: number;
-    height: number;
-  };
-}> = observer(({ notes, range, activeKeys, size, instrument }) => {
+  maxWidth: number | string;
+}> = observer(({ notes, range, activeKeys, maxWidth, instrument }) => {
   const genKeysFn =
     genKeysFnMap[instrument as keyof typeof genKeysFnMap] ||
     genKeysFnMap.default;
@@ -121,17 +123,42 @@ export const CommonKeyboard: React.FC<{
   );
 
   return (
-    <div
-      className={styles.container}
-      style={{
-        maxHeight: size.height,
-      }}
-    >
-      <div className={styles.keys}>
+    <div className={styles.container}>
+      <div
+        className={styles.keys}
+        onMouseLeave={() => {
+          keyboardStore.isPressing = false;
+        }}
+      >
         {keys?.map((keyName) => {
           return (
             <div
               key={keyName}
+              onMouseDown={() => {
+                keyboardStore.isPressing = true;
+                store.attackNote(store.currentTrack, {
+                  value: getSingleNoteStr(keyName),
+                });
+              }}
+              onMouseUp={() => {
+                store.releaseNote(store.currentTrack, {
+                  value: getSingleNoteStr(keyName),
+                });
+                keyboardStore.isPressing = false;
+              }}
+              onMouseLeave={() => {
+                store.releaseNote(store.currentTrack, {
+                  value: getSingleNoteStr(keyName),
+                });
+              }}
+              onMouseMove={(e) => {
+                e.preventDefault();
+                if (keyboardStore.isPressing === true) {
+                  store.attackNote(store.currentTrack, {
+                    value: getSingleNoteStr(keyName),
+                  });
+                }
+              }}
               className={classNames(
                 styles.key,
                 activeKeys.includes(keyName) && styles["key--active"],
@@ -147,7 +174,12 @@ export const CommonKeyboard: React.FC<{
         })}
       </div>
 
-      <div className={styles.notes}>
+      <div
+        className={styles.notes}
+        style={{
+          maxWidth,
+        }}
+      >
         {keys?.map((keyName) => {
           return (
             <Notes

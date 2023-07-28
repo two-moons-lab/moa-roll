@@ -50,7 +50,7 @@ export const Controller = observer(() => {
           -
         </div>
       </div>
-      {/* {store.status === "playing" ? (
+      {store.status === "playing" ? (
         <div onClick={() => store.stop()} className={classNames(styles.btn)}>
           stop
         </div>
@@ -58,7 +58,7 @@ export const Controller = observer(() => {
         <div onClick={() => store.play()} className={classNames(styles.btn)}>
           play
         </div>
-      )} */}
+      )}
     </div>
   );
 });

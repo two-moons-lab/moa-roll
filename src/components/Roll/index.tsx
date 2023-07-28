@@ -9,13 +9,16 @@ import { cloneDeep, isFunction } from "lodash";
 export const RollContext = createContext<RollStore>(null);
 
 type RollProps = {
-  height?: number;
-  // width?: number;
+  scrollHeight?: number | string;
+  scrollWidth?: number | string;
   data?: Partial<RollState>;
   showController?: boolean;
   modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
   onPlayEnd?: () => void;
-};
+} & React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+>;
 
 export type RollData = Partial<RollState>;
 
@@ -61,6 +64,16 @@ export class Roll extends React.Component<RollProps> {
   }
 
   render() {
+    const {
+      scrollHeight,
+      scrollWidth,
+      data,
+      showController,
+      modelRef,
+      onPlayEnd,
+      ...others
+    } = this.props;
+
     const store = this.store;
     const currentTrackData = (store.tracks.find(
       (track) => track.instrument === store.currentTrack
@@ -71,7 +84,7 @@ export class Roll extends React.Component<RollProps> {
 
     return (
       <RollContext.Provider value={store}>
-        <div className={styles["moa-roll"]}>
+        <div className={styles["moa-roll"]} {...others}>
           <div className={styles.sider}>
             {Object.keys(store.keyboards).map((name) => {
               return (
@@ -93,17 +106,19 @@ export class Roll extends React.Component<RollProps> {
           </div>
           {/* 这里将notes作为props传入的原因是对于单一的instrument来说它并不需要考虑其他的track, 但trigKeys却是所有instrument都可用的状态 */}
           <div className={styles.wrapper}>
-            <div className={styles.content}>
+            <div
+              className={styles.content}
+              style={{
+                maxHeight: this.props.scrollHeight,
+              }}
+            >
               {React.createElement(store.keyboards[store.currentTrack], {
                 instrument: store.currentTrack,
                 notes: currentTrackData.notes ?? [],
                 range: currentTrackData.range,
+                maxWidth: this.props.scrollWidth,
                 activeKeys: store.activeKeys[store.currentTrack],
                 key: store.currentTrack,
-                size: {
-                  width: this.props.width,
-                  height: this.props.height,
-                },
               } as any)}
             </div>
           </div>

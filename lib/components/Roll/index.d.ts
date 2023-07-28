@@ -2,12 +2,13 @@ import React from "react";
 import { RollState, RollStore } from "./Store";
 export declare const RollContext: React.Context<RollStore>;
 type RollProps = {
-    height?: number;
+    scrollHeight?: number | string;
+    scrollWidth?: number | string;
     data?: Partial<RollState>;
     showController?: boolean;
     modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
     onPlayEnd?: () => void;
-};
+} & React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 export type RollData = Partial<RollState>;
 export type ModelRef = {
     play: () => void;
@@ -19,6 +20,6 @@ export type ModelRef = {
 export declare class Roll extends React.Component<RollProps> {
     store: RollStore;
     constructor(props: RollProps);
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 export {};

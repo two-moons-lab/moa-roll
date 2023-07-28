@@ -105,6 +105,7 @@ export class RollStore {
   }
 
   @computed get keyboardLength() {
+    console.log(this.timeLength)
     return this.timeLength || this.defaultTimeLength;
   }
 
