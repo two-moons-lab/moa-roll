@@ -50,6 +50,8 @@ export class KeyboardStore {
 
   keyStatusMap: Record<string, boolean> = {};
 
+  @observable isPressing = false;
+
   @computed // note到键盘key的映射
   get noteToKeyMap() {
     const re: Record<string, string> = {};

@@ -10,6 +10,7 @@ export declare class KeyboardStore {
     instrument: string;
     constructor(context: RollStore, instrument: string);
     keyStatusMap: Record<string, boolean>;
+    isPressing: boolean;
     get noteToKeyMap(): Record<string, string>;
     get keyToNoteMap(): Record<string, string>;
     writeState: {

@@ -1,6 +1,13 @@
 import { Bass, Piano } from "components/instruments";
 import _ from "lodash";
-import { action, makeObservable, observable, computed } from "mobx";
+import {
+  action,
+  makeObservable,
+  observable,
+  computed,
+  autorun,
+  IReactionDisposer,
+} from "mobx";
 import * as Tone from "tone";
 import { Unit } from "tone";
 import { Note, NoteOnlyValue } from "typings/common";
@@ -8,6 +15,7 @@ import { getFullNoteStr } from "../../utils/note";
 import { CommonKeyboard } from "../keyboards/Common";
 import { BaseInstrument } from "../instruments/base";
 import { Drum } from "../instruments/drum";
+import { isFunction } from "lodash";
 
 export type Status = "stop" | "playing";
 export type Track = {
@@ -32,6 +40,8 @@ export type RollState = {
 };
 
 export class RollStore {
+  observeDisposer: IReactionDisposer;
+
   @observable currentTrack = "piano";
   @observable step = -1;
   @observable keyboardOctive: number = 4;
@@ -46,6 +56,7 @@ export class RollStore {
 
   events: Record<string, Function | undefined> = {
     onPlayEnd: undefined,
+    onChange: undefined,
   };
 
   registInstrument = (
@@ -63,10 +74,9 @@ export class RollStore {
   };
 
   constructor(initialState: Partial<RollState> | undefined) {
+    makeObservable(this);
     this.setData(initialState);
     this.init();
-
-    makeObservable(this);
   }
 
   @action changeTrack = (instrument: string) => {
@@ -76,6 +86,7 @@ export class RollStore {
   @action
   setData = (data: Partial<RollState> | undefined) => {
     Object.assign(this, data);
+
     Tone.Transport.bpm.value = this.bpm;
   };
 
@@ -84,14 +95,30 @@ export class RollStore {
     this.keyboardOctive = value;
   };
 
+  initChangeObserver = () => {
+    const observeFields = [
+      "tracks",
+      "timeLength",
+      "currentTrack",
+      "bpm",
+      "keyboardOctive",
+      "timeLength",
+    ];
+    this.observeDisposer = autorun(() => {
+      const newData = _.cloneDeep(_.pick(this, observeFields));
+      isFunction(this.events.onChange) && this.events.onChange(newData);
+    });
+  };
+
   init = () => {
+    this.initChangeObserver();
+
     this.registInstrument("piano", new Piano(), CommonKeyboard);
     this.registInstrument("bass", new Bass(), CommonKeyboard);
     this.registInstrument("drum", new Drum(), CommonKeyboard);
   };
 
-  @computed
-  get defaultTimeLength() {
+  @computed get defaultTimeLength() {
     const maxValues: number[] = [];
     this.tracks.forEach((track) => {
       const notes = track.notes as { time: number }[];
@@ -105,7 +132,6 @@ export class RollStore {
   }
 
   @computed get keyboardLength() {
-    console.log(this.timeLength)
     return this.timeLength || this.defaultTimeLength;
   }
 

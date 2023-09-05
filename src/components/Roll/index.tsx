@@ -15,6 +15,7 @@ type RollProps = {
   showController?: boolean;
   modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
   onPlayEnd?: () => void;
+  onChange?: (data: Partial<RollState>) => void;
 } & React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
   HTMLDivElement
@@ -39,6 +40,7 @@ export class Roll extends React.Component<RollProps> {
     super(props);
     this.store = new RollStore(props.data);
     this.store.events.onPlayEnd = props.onPlayEnd;
+    this.store.events.onChange = props.onChange;
 
     if (props.modelRef) {
       const ref = {
@@ -104,7 +106,7 @@ export class Roll extends React.Component<RollProps> {
             })}
             {this.props.showController && <Controller />}
           </div>
-          {/* 这里将notes作为props传入的原因是对于单一的instrument来说它并不需要考虑其他的track, 但trigKeys却是所有instrument都可用的状态 */}
+          {/* 这里将notes作为props传入的原因是对于单一的instrument来说它并不需要考虑其他的track, 但trigKeys却是所有instrument都可复用的全局状态 */}
           <div className={styles.wrapper}>
             <div
               className={styles.content}

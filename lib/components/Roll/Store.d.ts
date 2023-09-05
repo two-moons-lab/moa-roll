@@ -1,4 +1,5 @@
 /// <reference types="react" />
+import { IReactionDisposer } from "mobx";
 import * as Tone from "tone";
 import { Unit } from "tone";
 import { Note, NoteOnlyValue } from "typings/common";
@@ -23,6 +24,7 @@ export type RollState = {
     instrument: Record<string, Tone.Synth>;
 };
 export declare class RollStore {
+    observeDisposer: IReactionDisposer;
     currentTrack: string;
     step: number;
     keyboardOctive: number;
@@ -39,6 +41,7 @@ export declare class RollStore {
     changeTrack: (instrument: string) => void;
     setData: (data: Partial<RollState> | undefined) => void;
     setKeyboardOctive: (value: number) => void;
+    initChangeObserver: () => void;
     init: () => void;
     get defaultTimeLength(): number;
     get keyboardLength(): number;

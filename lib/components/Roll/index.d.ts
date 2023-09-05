@@ -8,6 +8,7 @@ type RollProps = {
     showController?: boolean;
     modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
     onPlayEnd?: () => void;
+    onChange?: (data: Partial<RollState>) => void;
 } & React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 export type RollData = Partial<RollState>;
 export type ModelRef = {
