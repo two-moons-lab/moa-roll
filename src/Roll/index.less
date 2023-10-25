@@ -10,6 +10,7 @@
 }
 
 @sider-width: 100px;
+
 .moa-roll {
   line-height: normal;
   display: flex;
@@ -19,8 +20,6 @@
 
 .sider {
   display: flex;
-  border: 2px solid rgb(235, 238, 241);
-  border-right: none;
   flex-direction: column;
   width: @sider-width;
 }
@@ -39,10 +38,15 @@
 
 .content {
   background: rgb(255, 255, 255);
-  border: 2px solid rgb(235, 238, 241);
-  border-left: none;
-  max-height: 400px;
-  overflow-y: auto;
+  position: relative;
+
+  &::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 }
 
 .notes {

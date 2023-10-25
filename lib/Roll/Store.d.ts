@@ -19,16 +19,18 @@ export type RollState = {
     activeKeys: Record<string, string[]>;
     bpm: number;
     status: Status;
+    squash: boolean;
     timeSignature: [number, number];
-    height?: number | string;
-    width?: number | string;
+    height?: number;
+    width?: number;
     keyboards: Record<string, React.FC>;
     instrument: Record<string, Tone.Synth>;
 };
 export declare class RollStore {
     observeDisposer: IReactionDisposer;
-    height?: number | string;
-    width?: number | string;
+    squash: boolean;
+    height: number;
+    width: number;
     currentTrack: string;
     step: number;
     keyboardOctive: number;

@@ -2,11 +2,12 @@ import React from "react";
 import { Note } from "typings/common";
 import styles from "./index.less";
 import classNames from "classnames";
-import { getFullNoteStr } from "../../../utils/note";
+import { getFullNoteStr } from "../../utils/note";
 import { observer } from "mobx-react";
 import { useContext, useEffect, useState } from "react";
-import { RollContext } from "../../Roll/index";
+import { RollContext } from "../../Roll";
 import { KeyboardStore, genKeysFnMap } from "./Store";
+import { ITEM_WIDTH } from "./constants";
 
 const getSingleNoteStr = (str: string) => {
   if (str.includes("/")) return str.split("/")[0];
@@ -18,8 +19,9 @@ export const CommonKeyboard: React.FC<{
   notes: Note[];
   activeKeys: string[];
   range?: [string, string];
-  maxWidth: number | string;
-}> = observer(({ notes, range, activeKeys, maxWidth, instrument }) => {
+  squash: boolean;
+  width: number;
+}> = observer(({ notes, squash, range, activeKeys, width, instrument }) => {
   const genKeysFn =
     genKeysFnMap[instrument as keyof typeof genKeysFnMap] ||
     genKeysFnMap.default;
@@ -47,8 +49,6 @@ export const CommonKeyboard: React.FC<{
     ({ notes, value }) => {
       const length = store.keyboardLength;
       const items = [];
-      const ITEM_WIDTH = 30;
-
       let index = 0;
       while (index < length) {
         const currentActiveNote = notes.find((note) => note.time === index);
@@ -76,7 +76,12 @@ export const CommonKeyboard: React.FC<{
       return (
         <div className={styles["notes-row"]}>
           {/* grid层主要用作交互，上层的item-notes只负责展示 */}
-          <div className={styles["item-grid"]}>
+          <div
+            className={styles["item-grid"]}
+            style={{
+              width: squash ? "100%" : "",
+            }}
+          >
             {Array(length)
               .fill("grid")
               .map((_, index) => {
@@ -98,7 +103,12 @@ export const CommonKeyboard: React.FC<{
               })}
           </div>
 
-          <div className={styles["item-notes"]}>
+          <div
+            className={styles["item-notes"]}
+            style={{
+              width: squash ? "100%" : "",
+            }}
+          >
             {items.map((item, index) => {
               return (
                 <div
@@ -177,7 +187,7 @@ export const CommonKeyboard: React.FC<{
       <div
         className={styles.notes}
         style={{
-          maxWidth,
+          width,
         }}
       >
         {keys?.map((keyName) => {

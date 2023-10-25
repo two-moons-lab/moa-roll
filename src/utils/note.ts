@@ -1,5 +1,4 @@
-import { NOISE_VALUES } from "components/Roll/constants";
-import { Note } from "typings/common";
+import { NOISE_VALUES } from "../constants";
 // note相关命名规范
 // noteStr: 形如 'C4#/D5b'
 // noteValue: 原始的用户输入的noteValue，形如 'C4#'

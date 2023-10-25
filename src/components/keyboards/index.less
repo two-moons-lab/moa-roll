@@ -2,15 +2,14 @@
   display: flex;
 }
 
-@rowHeight: 30px;
+@rowHeight: 26px;
 @colorPrimary: rgb(33, 41, 55);
 
 .keys > div {
   cursor: pointer;
 }
 .notes {
-  max-width: 600px;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 .notes-row {
   height: @rowHeight;
@@ -29,6 +28,7 @@
 .item {
   border: 2px solid rgb(235, 238, 241);
   background-color: white;
+  width: @rowHeight;
 }
 .item-note {
   background-color: rgba(@colorPrimary, 0.3);
@@ -42,21 +42,22 @@
   font-weight: bold;
   font-size: 12px;
   height: @rowHeight;
-  width: 92px;
+  width: 80px;
   border: 2px solid rgb(235, 238, 241);
   text-align: right;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: white;
   padding: 0 4px;
+  &--pitch {
+    color: white;
+    background-color: @colorPrimary;
+  }
 }
 .key-code {
   font-size: 10px;
   opacity: 0.6;
-}
-.key--pitch {
-  color: white;
-  background-color: @colorPrimary;
 }
 .key--active {
   color: @colorPrimary;

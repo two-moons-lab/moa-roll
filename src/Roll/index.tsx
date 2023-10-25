@@ -3,16 +3,17 @@ import styles from "./index.less";
 import { RollState, RollStore, Track } from "./Store";
 import { observer } from "mobx-react";
 import classNames from "classnames";
-import { Controller } from "../Controller/index";
-import { cloneDeep, isFunction } from "lodash";
+import { Controller } from "../components/Controller";
+import _, { cloneDeep, isFunction } from "lodash";
+import { Overview } from "../components/Overview";
+import { CONTENT_CLASS } from "./constants";
 
 export const RollContext = createContext<RollStore>(null);
 
 type RollProps = {
-  scrollHeight?: number | string;
-  scrollWidth?: number | string;
   data?: Partial<RollState>;
   showController?: boolean;
+  squash?: boolean;
   modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
   onPlayEnd?: () => void;
   onChange?: (data: Partial<RollState>) => void;
@@ -35,6 +36,7 @@ export type ModelRef = {
 @observer
 export class Roll extends React.Component<RollProps> {
   store: RollStore;
+  static defaultProps: { width: number };
 
   constructor(props: RollProps) {
     super(props);
@@ -66,15 +68,7 @@ export class Roll extends React.Component<RollProps> {
   }
 
   render() {
-    const {
-      scrollHeight,
-      scrollWidth,
-      data,
-      showController,
-      modelRef,
-      onPlayEnd,
-      ...others
-    } = this.props;
+    const { data, showController, modelRef, onPlayEnd, ...others } = this.props;
 
     const store = this.store;
     const currentTrackData = (store.tracks.find(
@@ -108,19 +102,22 @@ export class Roll extends React.Component<RollProps> {
           </div>
           {/* 这里将notes作为props传入的原因是对于单一的instrument来说它并不需要考虑其他的track, 但trigKeys却是所有instrument都可复用的全局状态 */}
           <div className={styles.wrapper}>
+            {/* <Overview /> */}
             <div
-              className={styles.content}
+              className={classNames(CONTENT_CLASS, styles.content)}
               style={{
-                maxHeight: this.props.scrollHeight,
+                // @todo temporarily disable scroll 
+                // height: this.store.height,
               }}
             >
               {React.createElement(store.keyboards[store.currentTrack], {
+                squash: store.squash,
                 instrument: store.currentTrack,
                 notes: currentTrackData.notes ?? [],
                 range: currentTrackData.range,
-                maxWidth: this.props.scrollWidth,
                 activeKeys: store.activeKeys[store.currentTrack],
                 key: store.currentTrack,
+                width: this.store.width,
               } as any)}
             </div>
           </div>

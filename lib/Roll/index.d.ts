@@ -4,6 +4,7 @@ export declare const RollContext: React.Context<RollStore>;
 type RollProps = {
     data?: Partial<RollState>;
     showController?: boolean;
+    squash?: boolean;
     modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
     onPlayEnd?: () => void;
     onChange?: (data: Partial<RollState>) => void;

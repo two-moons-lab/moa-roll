@@ -1,11 +1,11 @@
-import { action, autorun, computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { RollStore } from "../../Roll/Store";
 import {
   getNoteWithOctive,
   genKeys,
   getFullNoteStr,
-} from "../../../utils/note";
-import { isEqual, isNumber, remove } from "lodash";
+} from "../../utils/note";
+import { isNumber } from "lodash";
 import { Drum } from "../../instruments/drum";
 import { Note } from "typings/common";
 

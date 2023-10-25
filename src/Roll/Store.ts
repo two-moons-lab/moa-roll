@@ -1,4 +1,4 @@
-import { Bass, Piano } from "components/instruments";
+import { Bass, Piano } from "instruments";
 import _ from "lodash";
 import {
   action,
@@ -11,8 +11,8 @@ import {
 import * as Tone from "tone";
 import { Unit } from "tone";
 import { Note, NoteOnlyValue } from "typings/common";
-import { getFullNoteStr } from "../../utils/note";
-import { CommonKeyboard } from "../keyboards/Common";
+import { getFullNoteStr } from "../utils/note";
+import { CommonKeyboard } from "../components/keyboards";
 import { BaseInstrument } from "../instruments/base";
 import { Drum } from "../instruments/drum";
 import { isFunction } from "lodash";
@@ -33,7 +33,10 @@ export type RollState = {
   activeKeys: Record<string, string[]>;
   bpm: number;
   status: Status;
+  squash: boolean;
   timeSignature: [number, number];
+  height?: number;
+  width?: number;
 
   keyboards: Record<string, React.FC>;
   instrument: Record<string, Tone.Synth>;
@@ -42,6 +45,9 @@ export type RollState = {
 export class RollStore {
   observeDisposer: IReactionDisposer;
 
+  @observable squash: boolean = true;
+  @observable height: number = 300;
+  @observable width: number = 300;
   @observable currentTrack = "piano";
   @observable step = -1;
   @observable keyboardOctive: number = 4;
