@@ -7,4 +7,5 @@ export declare const CommonKeyboard: React.FC<{
     range?: [string, string];
     squash: boolean;
     width: number;
+    keyboardPiano?: boolean;
 }>;

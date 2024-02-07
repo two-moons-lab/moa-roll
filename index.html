@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .inner {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="outter">
+      <div class="inner">hahahah</div>
+    </div>
+  </body>
+  <script>
+    const dom = document.querySelector(".outter");
+    dom.addEventListener("click", (e) => {
+      console.log("outter", e);
+    });
+
+    const dom2 = document.querySelector(".inner");
+    dom2.addEventListener("click", (e) => {
+      console.log("inner", e);
+    });
+  </script>
+</html>

@@ -41,11 +41,18 @@ export declare class RollStore {
     activeKeys: Record<string, string[]>;
     instrument: Record<string, BaseInstrument>;
     keyboards: Record<string, React.FC>;
+    ctrs: Record<string, typeof BaseInstrument>;
+    keyboardPiano?: boolean;
     events: Record<string, Function | undefined>;
-    registInstrument: (name: string, instrument: BaseInstrument, component: React.FC) => void;
+    registInstrument: (name: string, { instrument, keyboard, ctr, }: {
+        ctr?: typeof BaseInstrument | undefined;
+        instrument?: BaseInstrument | undefined;
+        keyboard?: import("react").FC<{}> | undefined;
+    }) => void;
     constructor(initialState: Partial<RollState> | undefined);
     changeTrack: (instrument: string) => void;
     setData: (data: Partial<RollState> | undefined) => void;
+    clearTrack: () => void;
     setKeyboardOctive: (value: number) => void;
     initChangeObserver: () => void;
     init: () => void;

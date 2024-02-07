@@ -1,22 +1,23 @@
-import React, { createContext } from "react";
+import React, { createContext, useEffect } from "react";
 import styles from "./index.less";
 import { RollState, RollStore, Track } from "./Store";
 import { observer } from "mobx-react";
 import classNames from "classnames";
 import { Controller } from "../components/Controller";
 import _, { cloneDeep, isFunction } from "lodash";
-import { Overview } from "../components/Overview";
-import { CONTENT_CLASS } from "./constants";
+import { CONTENT_CLASS, OBSERVER_FIELDS } from "./constants";
 
 export const RollContext = createContext<RollStore>(null);
 
 type RollProps = {
   data?: Partial<RollState>;
   showController?: boolean;
+  keyboardPiano?: boolean;
+  width?: number;
   squash?: boolean;
   modelRef?: React.MutableRefObject<ModelRef> | ((ref: ModelRef) => void);
   onPlayEnd?: () => void;
-  onChange?: (data: Partial<RollState>) => void;
+  onDataChange?: (data: Partial<RollState>) => void;
 } & React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
   HTMLDivElement
@@ -33,16 +34,21 @@ export type ModelRef = {
   setData: (data: RollData) => void;
 };
 
-@observer
-export class Roll extends React.Component<RollProps> {
-  store: RollStore;
-  static defaultProps: { width: number };
+export type _RollProps = RollProps & {
+  storeRef: React.RefObject<RollStore>;
+};
 
-  constructor(props: RollProps) {
+@observer
+class _Roll extends React.Component<_RollProps> {
+  store: RollStore;
+
+  constructor(props: _RollProps) {
     super(props);
     this.store = new RollStore(props.data);
+    this.props.storeRef.current = this.store;
     this.store.events.onPlayEnd = props.onPlayEnd;
-    this.store.events.onChange = props.onChange;
+    this.store.events.onDataChange = props.onDataChange;
+    this.store.keyboardPiano = props.keyboardPiano ?? true;
 
     if (props.modelRef) {
       const ref = {
@@ -68,7 +74,8 @@ export class Roll extends React.Component<RollProps> {
   }
 
   render() {
-    const { data, showController, modelRef, onPlayEnd, ...others } = this.props;
+    const { data, showController, modelRef, onPlayEnd, storeRef, ...others } =
+      this.props;
 
     const store = this.store;
     const currentTrackData = (store.tracks.find(
@@ -105,19 +112,22 @@ export class Roll extends React.Component<RollProps> {
             {/* <Overview /> */}
             <div
               className={classNames(CONTENT_CLASS, styles.content)}
-              style={{
-                // @todo temporarily disable scroll 
-                // height: this.store.height,
-              }}
+              style={
+                {
+                  // @todo temporarily disable scroll
+                  // height: this.store.height,
+                }
+              }
             >
               {React.createElement(store.keyboards[store.currentTrack], {
                 squash: store.squash,
+                keyboardPiano: this.props.keyboardPiano,
                 instrument: store.currentTrack,
                 notes: currentTrackData.notes ?? [],
                 range: currentTrackData.range,
                 activeKeys: store.activeKeys[store.currentTrack],
                 key: store.currentTrack,
-                width: this.store.width,
+                width: this.props.width,
               } as any)}
             </div>
           </div>
@@ -126,3 +136,33 @@ export class Roll extends React.Component<RollProps> {
     );
   }
 }
+
+// 当外层数据与内部状态同步时，不进行重渲染
+const storeUpdaterHOC = (InnerComponent: typeof React.Component) => {
+  class WrappedCompnent extends React.Component<RollProps> {
+    storeRef = React.createRef<RollStore>();
+
+    // store updater
+    shouldComponentUpdate(nextProps: Readonly<RollProps>): boolean {
+      if (
+        !_.isEqual(
+          _.pick(nextProps.data, OBSERVER_FIELDS),
+          _.pick(this.storeRef.current, OBSERVER_FIELDS)
+        )
+      ) {
+        console.log("[moa-roll] store synced props");
+        (this.storeRef.current as RollStore).setData(nextProps.data);
+      }
+
+      return false;
+    }
+
+    render() {
+      return <InnerComponent {...this.props} storeRef={this.storeRef} />;
+    }
+  }
+
+  return WrappedCompnent;
+};
+
+export const Roll = storeUpdaterHOC(_Roll);

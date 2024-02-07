@@ -1,4 +1,4 @@
-import { Bass, Piano } from "instruments";
+import { Bass, Piano, Drum } from "instruments";
 import _ from "lodash";
 import {
   action,
@@ -14,8 +14,8 @@ import { Note, NoteOnlyValue } from "typings/common";
 import { getFullNoteStr } from "../utils/note";
 import { CommonKeyboard } from "../components/keyboards";
 import { BaseInstrument } from "../instruments/base";
-import { Drum } from "../instruments/drum";
 import { isFunction } from "lodash";
+import { OBSERVER_FIELDS } from "./constants";
 
 export type Status = "stop" | "playing";
 export type Track = {
@@ -37,7 +37,6 @@ export type RollState = {
   timeSignature: [number, number];
   height?: number;
   width?: number;
-
   keyboards: Record<string, React.FC>;
   instrument: Record<string, Tone.Synth>;
 };
@@ -59,24 +58,31 @@ export class RollStore {
 
   instrument: Record<string, BaseInstrument> = {};
   keyboards: Record<string, React.FC> = {};
+  ctrs: Record<string, typeof BaseInstrument> = {};
+
+  keyboardPiano?: boolean = false;
 
   events: Record<string, Function | undefined> = {
     onPlayEnd: undefined,
-    onChange: undefined,
+    onDataChange: undefined,
   };
 
   registInstrument = (
     name: string,
-    instrument: BaseInstrument,
-    component: React.FC
+    {
+      instrument,
+      keyboard,
+      ctr,
+    }: {
+      ctr?: typeof BaseInstrument;
+      instrument?: BaseInstrument;
+      keyboard?: React.FC;
+    }
   ) => {
-    this.instrument[name] = instrument;
-    this.keyboards[name] = component;
+    instrument && (this.instrument[name] = instrument);
+    ctr && (this.ctrs[name] = ctr);
+    keyboard && (this.keyboards[name] = keyboard);
     this.activeKeys[name] = [];
-    // this.tracks.push({
-    //   instrument: name,
-    //   notes: [],
-    // });
   };
 
   constructor(initialState: Partial<RollState> | undefined) {
@@ -97,31 +103,36 @@ export class RollStore {
   };
 
   @action
+  clearTrack = () => {
+    this.tracks.forEach((track) => {
+      track.notes = [];
+    });
+  };
+
+  @action
   setKeyboardOctive = (value: number) => {
     this.keyboardOctive = value;
   };
 
   initChangeObserver = () => {
-    const observeFields = [
-      "tracks",
-      "timeLength",
-      "currentTrack",
-      "bpm",
-      "keyboardOctive",
-      "timeLength",
-    ];
     this.observeDisposer = autorun(() => {
-      const newData = _.cloneDeep(_.pick(this, observeFields));
-      isFunction(this.events.onChange) && this.events.onChange(newData);
+      const newData = _.cloneDeep(_.pick(this, OBSERVER_FIELDS));
+      isFunction(this.events.onDataChange) && this.events.onDataChange(newData);
     });
   };
 
   init = () => {
     this.initChangeObserver();
 
-    this.registInstrument("piano", new Piano(), CommonKeyboard);
-    this.registInstrument("bass", new Bass(), CommonKeyboard);
-    this.registInstrument("drum", new Drum(), CommonKeyboard);
+    this.registInstrument("piano", { keyboard: CommonKeyboard, ctr: Piano });
+    this.registInstrument("bass", { keyboard: CommonKeyboard, ctr: Bass });
+    this.registInstrument("drum", { keyboard: CommonKeyboard, ctr: Drum });
+
+    setTimeout(() => {
+      this.registInstrument("piano", { instrument: new Piano() });
+      this.registInstrument("bass", { instrument: new Bass() });
+      this.registInstrument("drum", { instrument: new Drum() });
+    });
   };
 
   @computed get defaultTimeLength() {
