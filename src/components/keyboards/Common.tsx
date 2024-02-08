@@ -27,6 +27,8 @@ export const CommonKeyboard: React.FC<{
     const genKeysFn =
       genKeysFnMap[instrument as keyof typeof genKeysFnMap] ||
       genKeysFnMap.default;
+
+    // 获取纵向的音符
     const keys = genKeysFn(
       notes.map((note) => note.value),
       range
@@ -45,7 +47,7 @@ export const CommonKeyboard: React.FC<{
     if (
       !notes.length &&
       !(store.timeLength && range) &&
-      !store.instrument[instrument].isNoise
+      !store.ctrs[instrument].isNoise
     )
       return <div className={styles.empty}>NO DATA</div>;
 
@@ -95,6 +97,7 @@ export const CommonKeyboard: React.FC<{
                   };
                   return (
                     <div
+                      className={classNames(styles.item)}
                       key={index}
                       onMouseDown={() => setStartNote(currNote)}
                       onMouseUp={() => setEndNote(currNote)}
@@ -118,7 +121,6 @@ export const CommonKeyboard: React.FC<{
                   <div
                     key={index}
                     className={classNames(
-                      styles.item,
                       item.type === "note" && styles["item-note"],
                       item.index[0] <= store.step &&
                         store.step <= item.index[1] &&

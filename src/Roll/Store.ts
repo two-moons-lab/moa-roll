@@ -235,6 +235,7 @@ export class RollStore {
     Tone.Transport.bpm.value = value;
   };
   @action setTimeLenth = (value: number) => {
+    if (value < 0) return;
     this.timeLength = value;
   };
 
