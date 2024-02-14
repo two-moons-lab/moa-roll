@@ -1,6 +1,8 @@
 import { BaseInstrument } from "./base";
-import { MembraneSynth, NoiseSynth } from "tone";
+import * as Tone from "tone";
 import { Time } from "tone/build/esm/core/type/Units";
+
+const { MembraneSynth, NoiseSynth } = Tone;
 
 export class Drum implements BaseInstrument {
   static isNoise = true;
