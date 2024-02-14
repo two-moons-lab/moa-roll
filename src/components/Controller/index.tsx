@@ -43,18 +43,18 @@ export const Controller = observer(({}) => {
 
       <div className={styles.length}>
         <label>length: {store.timeLength}</label>
-        <div>
-          <span
-            className={classNames(styles.btn)}
-            onClick={() => store.setTimeLenth(store.keyboardLength + 4)}
-          >
-            +
-          </span>
+        <div className={styles['time-calc']}>
           <span
             className={classNames(styles.btn)}
             onClick={() => store.setTimeLenth(store.keyboardLength - 4)}
           >
             -
+          </span>
+          <span
+            className={classNames(styles.btn)}
+            onClick={() => store.setTimeLenth(store.keyboardLength + 4)}
+          >
+            +
           </span>
         </div>
       </div>

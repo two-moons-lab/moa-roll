@@ -99,7 +99,9 @@ export class RollStore {
   setData = (data: Partial<RollState> | undefined) => {
     Object.assign(this, data);
 
-    Tone.Transport.bpm.value = this.bpm;
+    setTimeout(() => {
+      Tone.Transport.bpm.value = this.bpm;
+    });
   };
 
   @action

@@ -97,7 +97,10 @@ export const CommonKeyboard: React.FC<{
                   };
                   return (
                     <div
-                      className={classNames(styles.item)}
+                      className={classNames(
+                        styles.item,
+                        index === store.step && styles["item-grid--active"]
+                      )}
                       key={index}
                       onMouseDown={() => setStartNote(currNote)}
                       onMouseUp={() => setEndNote(currNote)}
@@ -121,10 +124,11 @@ export const CommonKeyboard: React.FC<{
                   <div
                     key={index}
                     className={classNames(
+                      styles.note,
                       item.type === "note" && styles["item-note"],
                       item.index[0] <= store.step &&
                         store.step <= item.index[1] &&
-                        styles["item--active"]
+                        styles["item-note--active"]
                     )}
                     style={{
                       width: (item.length ? item.length : 1) * ITEM_WIDTH,
