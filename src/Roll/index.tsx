@@ -12,6 +12,11 @@ export const RollContext = createContext<RollStore>(null);
 type RollProps = {
   data?: Partial<RollState>;
   showController?: boolean;
+  controllers: {
+    octive?: boolean;
+    length?: boolean;
+    clear?: boolean;
+  };
   keyboardPiano?: boolean;
   width?: number;
   squash?: boolean;
@@ -89,23 +94,30 @@ class _Roll extends React.Component<_RollProps> {
       <RollContext.Provider value={store}>
         <div className={styles["moa-roll"]} {...others}>
           <div className={styles.sider}>
-            {Object.keys(store.keyboards).map((name) => {
-              return (
-                <div
-                  key={name}
-                  onClick={() => {
-                    store.changeTrack(name);
-                  }}
-                  className={classNames(
-                    styles["sider-item"],
-                    store.currentTrack === name && styles["sider-item--active"]
-                  )}
-                >
-                  {name}
-                </div>
-              );
-            })}
-            {this.props.showController && <Controller />}
+            {Object.keys(store.keyboards)
+              .filter((name) =>
+                store.tracks.find((track) => track.instrument === name)
+              )
+              .map((name) => {
+                return (
+                  <div
+                    key={name}
+                    onClick={() => {
+                      store.changeTrack(name);
+                    }}
+                    className={classNames(
+                      styles["sider-item"],
+                      store.currentTrack === name &&
+                        styles["sider-item--active"]
+                    )}
+                  >
+                    {name}
+                  </div>
+                );
+              })}
+            {this.props.showController && (
+              <Controller controllers={this.props.controllers} />
+            )}
           </div>
           {/* 这里将notes作为props传入的原因是对于单一的instrument来说它并不需要考虑其他的track, 但trigKeys却是所有instrument都可复用的全局状态 */}
           <div className={styles.wrapper}>
@@ -137,7 +149,9 @@ class _Roll extends React.Component<_RollProps> {
   }
 }
 
-// 当外层数据与内部状态同步时，不进行重渲染
+const CHANGE_PROPS = ["controllers"];
+
+// 当外层数据与内部状态一样时，不进行重渲染
 const storeUpdaterHOC = (InnerComponent: typeof React.Component) => {
   class WrappedCompnent extends React.Component<RollProps> {
     storeRef = React.createRef<RollStore>();
@@ -150,8 +164,19 @@ const storeUpdaterHOC = (InnerComponent: typeof React.Component) => {
           _.pick(this.storeRef.current, OBSERVER_FIELDS)
         )
       ) {
+        debugger
         console.log("[moa-roll] store synced props");
         (this.storeRef.current as RollStore).setData(nextProps.data);
+      }
+
+      if (
+        !_.isEqual(
+          _.pick(nextProps, CHANGE_PROPS),
+          _.pick(this.props, CHANGE_PROPS)
+        )
+      ) {
+        debugger
+        return true;
       }
 
       return false;

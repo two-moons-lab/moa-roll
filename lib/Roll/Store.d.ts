@@ -10,7 +10,7 @@ export type Track = {
     notes: Note[];
     range?: [string, string];
 };
-export type RollState = {
+export interface RollState {
     currentTrack: string;
     keyboardOctive: number;
     step: number;
@@ -20,13 +20,12 @@ export type RollState = {
     bpm: number;
     status: Status;
     squash: boolean;
-    timeSignature: [number, number];
     height?: number;
     width?: number;
     keyboards: Record<string, React.FC>;
     instrument: Record<string, Tone.Synth>;
-};
-export declare class RollStore {
+}
+export declare class RollStore implements RollState {
     observeDisposer: IReactionDisposer;
     squash: boolean;
     height: number;
@@ -35,11 +34,11 @@ export declare class RollStore {
     step: number;
     keyboardOctive: number;
     timeLength: RollState["timeLength"];
-    status: Status;
-    tracks: Track[];
+    status: RollState["status"];
+    tracks: RollState["tracks"];
     bpm: number;
-    activeKeys: Record<string, string[]>;
-    instrument: Record<string, BaseInstrument>;
+    activeKeys: RollState["activeKeys"];
+    instrument: {};
     keyboards: Record<string, React.FC>;
     ctrs: Record<string, typeof BaseInstrument>;
     keyboardPiano?: boolean;
@@ -51,6 +50,7 @@ export declare class RollStore {
     }) => void;
     constructor(initialState: Partial<RollState> | undefined);
     changeTrack: (instrument: string) => void;
+    changeCurrentTrackOctive: (position: "top" | "bottom", value: number) => void;
     setData: (data: Partial<RollState> | undefined) => void;
     clearTrack: () => void;
     setKeyboardOctive: (value: number) => void;

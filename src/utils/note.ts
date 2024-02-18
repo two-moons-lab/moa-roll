@@ -143,3 +143,42 @@ export const genKeys = (noteValues: string[], range?: string[]) => {
 
   return re.reverse();
 };
+
+export function compareNoteStr(note1: string, note2: string) {
+  // 将音符转换为对应的数值
+  const noteValues = {
+    C: 0,
+    D: 2,
+    E: 4,
+    F: 5,
+    G: 7,
+    A: 9,
+    B: 11,
+  };
+
+  // 提取音符的音名和音高
+  const regex = /^([A-G])(#|b)?(\d)$/;
+  const match1 = note1.match(regex);
+  const match2 = note2.match(regex);
+
+  if (!match1 || !match2) {
+    console.log("Invalid note format.");
+    return 0;
+  }
+
+  const [, noteName1, acc1, octave1] = match1;
+  const [, noteName2, acc2, octave2] = match2;
+
+  // 计算音符的数值
+  const value1 =
+    noteValues[noteName1] +
+    (acc1 === "#" ? 1 : acc1 === "b" ? -1 : 0) +
+    (parseInt(octave1) - 4) * 12;
+  const value2 =
+    noteValues[noteName2] +
+    (acc2 === "#" ? 1 : acc2 === "b" ? -1 : 0) +
+    (parseInt(octave2) - 4) * 12;
+
+  // 比较音高
+  return value1 - value2;
+}

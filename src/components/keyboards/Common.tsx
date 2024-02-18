@@ -102,6 +102,7 @@ export const CommonKeyboard: React.FC<{
                         index === store.step && styles["item-grid--active"]
                       )}
                       key={index}
+                      // 这里mousedown之后，dom会消失，可能造成外层不能触发click
                       onMouseDown={() => setStartNote(currNote)}
                       onMouseUp={() => setEndNote(currNote)}
                       onMouseEnter={() => onMouseEnter(currNote)}

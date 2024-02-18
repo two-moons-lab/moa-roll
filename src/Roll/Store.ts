@@ -1,5 +1,5 @@
 import { Bass, Piano, Drum } from "instruments";
-import _ from "lodash";
+import _, { split } from "lodash";
 import {
   action,
   makeObservable,
@@ -11,7 +11,7 @@ import {
 import * as Tone from "tone";
 import { Unit } from "tone";
 import { Note, NoteOnlyValue } from "typings/common";
-import { getFullNoteStr } from "../utils/note";
+import { compareNoteStr, getFullNoteStr } from "../utils/note";
 import { CommonKeyboard } from "../components/keyboards";
 import { BaseInstrument } from "../instruments/base";
 import { isFunction } from "lodash";
@@ -24,7 +24,7 @@ export type Track = {
   range?: [string, string];
 };
 
-export type RollState = {
+export interface RollState {
   currentTrack: string;
   keyboardOctive: number;
   step: number;
@@ -34,14 +34,13 @@ export type RollState = {
   bpm: number;
   status: Status;
   squash: boolean;
-  timeSignature: [number, number];
   height?: number;
   width?: number;
   keyboards: Record<string, React.FC>;
   instrument: Record<string, Tone.Synth>;
-};
+}
 
-export class RollStore {
+export class RollStore implements RollState {
   observeDisposer: IReactionDisposer;
 
   @observable squash: boolean = true;
@@ -51,12 +50,12 @@ export class RollStore {
   @observable step = -1;
   @observable keyboardOctive: number = 4;
   @observable timeLength: RollState["timeLength"] = undefined;
-  @observable status: Status = "stop";
-  @observable tracks: Track[] = [];
+  @observable status: RollState["status"] = "stop";
+  @observable tracks: RollState["tracks"] = [];
   @observable bpm: number = 90;
-  @observable activeKeys: Record<string, string[]> = {};
+  @observable activeKeys: RollState["activeKeys"] = {};
 
-  instrument: Record<string, BaseInstrument> = {};
+  instrument = {};
   keyboards: Record<string, React.FC> = {};
   ctrs: Record<string, typeof BaseInstrument> = {};
 
@@ -93,6 +92,40 @@ export class RollStore {
 
   @action changeTrack = (instrument: string) => {
     this.currentTrack = instrument;
+  };
+
+  @action changeCurrentTrackOctive = (
+    position: "top" | "bottom",
+    value: number
+  ) => {
+    const track = this.tracks.find(
+      (track) => track.instrument === this.currentTrack
+    );
+
+    if (position === "top") {
+      if (!track?.range?.[1]) return;
+      const noteStr = track?.range[1] as string;
+      const [name, octive] = noteStr?.split("");
+      const newOctive = Number(octive) + value;
+      const newStr = `${name}${newOctive <= 1 ? octive : newOctive}`;
+      const bottomStr = track.range[0];
+      debugger
+      if (compareNoteStr(newStr, bottomStr) <= 0) return;
+
+      track.range[1] = newStr;
+    }
+
+    if (position === "bottom") {
+      if (!track?.range?.[0]) return;
+      const noteStr = track?.range[0] as string;
+      const [name, octive] = noteStr?.split("");
+      const newOctive = Number(octive) + value;
+      const newStr = `${name}${newOctive <= 1 ? octive : newOctive}`;
+      const topStr = track.range[1];
+      if (compareNoteStr(newStr, topStr) >= 0) return;
+
+      track.range[0] = newStr;
+    }
   };
 
   @action
@@ -197,7 +230,7 @@ export class RollStore {
     Tone.Transport.schedule(
       (time) => this.releaseNote(name, note, time),
       `+${
-        Tone.Time("8n").toSeconds() * duration - Tone.Time("32n").toSeconds()
+        Tone.Time("8n").toSeconds() * duration - Tone.Time("26n").toSeconds()
       }`
     );
   };

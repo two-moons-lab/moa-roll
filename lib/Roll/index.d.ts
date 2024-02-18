@@ -4,6 +4,11 @@ export declare const RollContext: React.Context<RollStore>;
 type RollProps = {
     data?: Partial<RollState>;
     showController?: boolean;
+    controllers: {
+        octive?: boolean;
+        length?: boolean;
+        clear?: boolean;
+    };
     keyboardPiano?: boolean;
     width?: number;
     squash?: boolean;
