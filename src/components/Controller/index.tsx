@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { observer } from "mobx-react";
 import { RollContext } from "../../Roll";
 import classNames from "classnames";
+import * as Tone from "tone";
 
 export const Controller: React.FC<{
   controllers: Record<string, boolean>;
@@ -113,7 +114,13 @@ export const Controller: React.FC<{
           stop
         </div>
       ) : (
-        <div onClick={() => store.play()} className={classNames(styles.btn)}>
+        <div
+          onClick={() => {
+            store.play();
+            Tone.Transport.bpm.value = store.bpm;
+          }}
+          className={classNames(styles.btn)}
+        >
           play
         </div>
       )}
