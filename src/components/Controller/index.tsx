@@ -116,8 +116,8 @@ export const Controller: React.FC<{
       ) : (
         <div
           onClick={() => {
-            store.play();
             Tone.Transport.bpm.value = store.bpm;
+            store.play();
           }}
           className={classNames(styles.btn)}
         >
