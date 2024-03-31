@@ -109,7 +109,7 @@ export class RollStore implements RollState {
       const newOctive = Number(octive) + value;
       const newStr = `${name}${newOctive <= 1 ? octive : newOctive}`;
       const bottomStr = track.range[0];
-      debugger
+      debugger;
       if (compareNoteStr(newStr, bottomStr) <= 0) return;
 
       track.range[1] = newStr;
@@ -195,7 +195,8 @@ export class RollStore implements RollState {
 
   @action
   play = () => {
-    if (this.status === "playing") return;
+    this.stop();
+    // if (this.status === "playing") return;
     this.start();
 
     this.status = "playing";
