@@ -2,12 +2,14 @@ import React from "react";
 import { Note } from "typings/common";
 import styles from "./index.less";
 import classNames from "classnames";
-import { getFullNoteStr } from "../../utils/note";
+import { getFullNoteStr, separateNoteStr } from "../../utils/note";
 import { observer } from "mobx-react";
 import { useContext, useEffect, useState } from "react";
 import { RollContext } from "../../Roll";
 import { KeyboardStore, genKeysFnMap } from "./Store";
 import { ITEM_WIDTH } from "./constants";
+import { isMobile } from "utils/env";
+import { singNameMap } from "rad.js";
 
 const getSingleNoteStr = (str: string) => {
   if (str.includes("/")) return str.split("/")[0];
@@ -22,8 +24,20 @@ export const CommonKeyboard: React.FC<{
   squash: boolean;
   width: number;
   keyboardPiano?: boolean;
+  scales?: string[];
+  scaleType?: string;
 }> = observer(
-  ({ notes, squash, keyboardPiano, range, activeKeys, width, instrument }) => {
+  ({
+    notes,
+    squash,
+    keyboardPiano,
+    scales,
+    scaleType,
+    range,
+    activeKeys,
+    width,
+    instrument,
+  }) => {
     const genKeysFn =
       genKeysFnMap[instrument as keyof typeof genKeysFnMap] ||
       genKeysFnMap.default;
@@ -78,6 +92,8 @@ export const CommonKeyboard: React.FC<{
         }
 
         const { setStartNote, setEndNote, onMouseEnter } = keyboardStore;
+        const { name } = separateNoteStr(value);
+        const isRoot = scales?.indexOf(name) === 0;
 
         return (
           <div className={styles["notes-row"]}>
@@ -114,6 +130,7 @@ export const CommonKeyboard: React.FC<{
                 })}
             </div>
 
+            {/* 上层的item-notes只负责展示 */}
             <div
               className={styles["item-notes"]}
               style={{
@@ -138,6 +155,16 @@ export const CommonKeyboard: React.FC<{
                 );
               })}
             </div>
+
+            {/* 上层的item-notes只负责展示 */}
+            <div
+              className={styles["row-hightlight"]}
+              style={{
+                backgroundColor: scales?.includes(name)
+                  ? `rgba(255,87,34,${isRoot ? 0.3 : 0.08})`
+                  : "",
+              }}
+            ></div>
           </div>
         );
       }
@@ -152,16 +179,36 @@ export const CommonKeyboard: React.FC<{
           }}
         >
           {keys?.map((keyName) => {
+            const { name } = separateNoteStr(keyName);
+            const singName = scaleType
+              ? singNameMap[scaleType][scales?.indexOf(name)]
+              : "";
+            const isRoot = scales?.indexOf(name) === 0;
+
             return (
               <div
                 key={keyName}
+                onTouchStart={() => {
+                  keyboardStore.isPressing = true;
+                  store.attackNote(store.currentTrack, {
+                    value: getSingleNoteStr(keyName),
+                  });
+                }}
+                onTouchEnd={() => {
+                  store.releaseNote(store.currentTrack, {
+                    value: getSingleNoteStr(keyName),
+                  });
+                  keyboardStore.isPressing = false;
+                }}
                 onMouseDown={() => {
+                  if (isMobile()) return;
                   keyboardStore.isPressing = true;
                   store.attackNote(store.currentTrack, {
                     value: getSingleNoteStr(keyName),
                   });
                 }}
                 onMouseUp={() => {
+                  if (isMobile()) return;
                   store.releaseNote(store.currentTrack, {
                     value: getSingleNoteStr(keyName),
                   });
@@ -194,13 +241,22 @@ export const CommonKeyboard: React.FC<{
                   <div />
                 )}
                 <span>{keyName}</span>
+                <span
+                  style={{
+                    fontSize: 10,
+                    marginLeft: 2,
+                    color: isRoot ? "#ff5722" : "#ffc2af",
+                  }}
+                >
+                  {singName}
+                </span>
               </div>
             );
           })}
         </div>
 
         <div
-          className={styles.notes}
+          className={classNames(styles.notes, "roll-notes")}
           style={{
             maxWidth: width,
           }}

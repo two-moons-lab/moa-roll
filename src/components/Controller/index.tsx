@@ -13,18 +13,20 @@ export const Controller: React.FC<{
 
   return (
     <div className={styles.controller}>
-      <div className={styles.bpm}>
-        <label>bpm: {store.bpm}</label>
-        <input
-          type="range"
-          min={40}
-          max={200}
-          value={store.bpm}
-          onInput={(e) => {
-            store.setBpm(Number(e.target.value));
-          }}
-        />
-      </div>
+      {store.bpm && (
+        <div className={styles.bpm}>
+          <label>bpm: {store.bpm}</label>
+          <input
+            type="range"
+            min={40}
+            max={200}
+            value={store.bpm}
+            onInput={(e) => {
+              store.setBpm(Number(e.target.value));
+            }}
+          />
+        </div>
+      )}
       {store.keyboardPiano && (
         <div className={styles.keyboard}>
           <label>keys octive: {store.keyboardOctive}</label>

@@ -79,6 +79,8 @@ const comparePitch = (a: PitchSign, b: PitchSign) => {
 };
 
 export const separateNoteStr = (noteStr: string) => {
+  if (noteStr.includes("/")) noteStr = noteStr.split("/")[0];
+
   const name = noteStr.slice(0, -1);
   const octive = noteStr.slice(-1);
 

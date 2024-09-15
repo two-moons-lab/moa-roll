@@ -22,12 +22,17 @@ export interface RollState {
     squash: boolean;
     height?: number;
     width?: number;
+    scale?: {
+        root: string;
+        type: string;
+    };
     keyboards: Record<string, React.FC>;
     instrument: Record<string, Tone.Synth>;
 }
 export declare class RollStore implements RollState {
     observeDisposer: IReactionDisposer;
     squash: boolean;
+    scale: RollState["scale"];
     height: number;
     width: number;
     currentTrack: string;
@@ -60,7 +65,7 @@ export declare class RollStore implements RollState {
     get keyboardLength(): number;
     start: () => void;
     play: () => void;
-    stop: () => void;
+    stop: (triggerPlayEnd?: boolean) => void;
     trigNote: (name: string, note: Note, time: Unit.Time) => void;
     attackNote: (name: string, note: NoteOnlyValue, time?: Unit.Time) => void;
     releaseNote: (name: string, note: NoteOnlyValue, time?: Unit.Time) => void;

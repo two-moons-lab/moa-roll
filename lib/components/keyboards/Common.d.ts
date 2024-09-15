@@ -8,4 +8,6 @@ export declare const CommonKeyboard: React.FC<{
     squash: boolean;
     width: number;
     keyboardPiano?: boolean;
+    scales?: string[];
+    scaleType?: string;
 }>;

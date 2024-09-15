@@ -16,6 +16,7 @@ import { CommonKeyboard } from "../components/keyboards";
 import { BaseInstrument } from "../instruments/base";
 import { isFunction } from "lodash";
 import { OBSERVER_FIELDS } from "./constants";
+import { getEnv, isBrowser } from "utils/env";
 
 export type Status = "stop" | "playing";
 export type Track = {
@@ -36,6 +37,10 @@ export interface RollState {
   squash: boolean;
   height?: number;
   width?: number;
+  scale?: {
+    root: string;
+    type: string;
+  };
   keyboards: Record<string, React.FC>;
   instrument: Record<string, Tone.Synth>;
 }
@@ -44,6 +49,7 @@ export class RollStore implements RollState {
   observeDisposer: IReactionDisposer;
 
   @observable squash: boolean = true;
+  @observable scale: RollState["scale"] = undefined;
   @observable height: number = 300;
   @observable width: number = 300;
   @observable currentTrack = "piano";
@@ -109,7 +115,6 @@ export class RollStore implements RollState {
       const newOctive = Number(octive) + value;
       const newStr = `${name}${newOctive <= 1 ? octive : newOctive}`;
       const bottomStr = track.range[0];
-      debugger;
       if (compareNoteStr(newStr, bottomStr) <= 0) return;
 
       track.range[1] = newStr;
@@ -132,9 +137,9 @@ export class RollStore implements RollState {
   setData = (data: Partial<RollState> | undefined) => {
     Object.assign(this, data);
 
-    setTimeout(() => {
+    if (isBrowser()) {
       Tone.Transport.bpm.value = this.bpm;
-    });
+    }
   };
 
   @action
@@ -163,11 +168,11 @@ export class RollStore implements RollState {
     this.registInstrument("bass", { keyboard: CommonKeyboard, ctr: Bass });
     this.registInstrument("drum", { keyboard: CommonKeyboard, ctr: Drum });
 
-    setTimeout(() => {
+    if (isBrowser()) {
       this.registInstrument("piano", { instrument: new Piano() });
       this.registInstrument("bass", { instrument: new Bass() });
       this.registInstrument("drum", { instrument: new Drum() });
-    });
+    }
   };
 
   @computed get defaultTimeLength() {
@@ -195,7 +200,7 @@ export class RollStore implements RollState {
 
   @action
   play = () => {
-    this.stop();
+    this.stop(false);
     // if (this.status === "playing") return;
     this.start();
 
@@ -204,10 +209,11 @@ export class RollStore implements RollState {
   };
 
   @action
-  stop = () => {
+  stop = (triggerPlayEnd = true) => {
     if (this.status === "stop") return;
-
-    this.events.onPlayEnd && this.events.onPlayEnd();
+    if (triggerPlayEnd) {
+      this.events.onPlayEnd && this.events.onPlayEnd();
+    }
     this.status = "stop";
     Tone.Transport.cancel(); // 取消之前的schedule repeat
     for (let name in this.instrument) {

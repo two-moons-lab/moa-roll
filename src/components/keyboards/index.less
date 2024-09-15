@@ -35,6 +35,17 @@
   height: 100%;
   pointer-events: none;
 }
+
+.row-hightlight {
+  left: 0;
+  top: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .item-note {
   background-color: rgba(@colorPrimary, 0.3);
   outline: 2px solid #ebeef1;
@@ -46,7 +57,8 @@
   font-weight: bold;
   font-size: 12px;
   height: @rowHeight;
-  width: 80px;
+  width: 70px;
+
   border: 2px solid rgb(235, 238, 241);
   text-align: right;
   display: flex;
@@ -59,6 +71,12 @@
     background-color: @colorPrimary;
   }
 }
+@media (min-width: 768px) {
+  .key {
+    width: 80px;
+  }
+}
+
 .key-code {
   font-size: 10px;
   opacity: 0.6;

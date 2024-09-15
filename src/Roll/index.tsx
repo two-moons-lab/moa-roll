@@ -4,8 +4,9 @@ import { RollState, RollStore, Track } from "./Store";
 import { observer } from "mobx-react";
 import classNames from "classnames";
 import { Controller } from "../components/Controller";
-import _, { cloneDeep, isFunction } from "lodash";
+import _, { cloneDeep, isBoolean, isFunction, isUndefined } from "lodash";
 import { CONTENT_CLASS, OBSERVER_FIELDS } from "./constants";
+import { scale } from "rad.js";
 
 export const RollContext = createContext<RollStore>(null);
 
@@ -16,6 +17,7 @@ type RollProps = {
     octive?: boolean;
     length?: boolean;
     clear?: boolean;
+    bpm?: boolean;
   };
   keyboardPiano?: boolean;
   width?: number;
@@ -39,6 +41,7 @@ export type ModelRef = {
   setData: (data: RollData) => void;
 };
 
+// storeRef only for inner roll's storeUpdater
 export type _RollProps = RollProps & {
   storeRef: React.RefObject<RollStore>;
 };
@@ -53,7 +56,9 @@ class _Roll extends React.Component<_RollProps> {
     this.props.storeRef.current = this.store;
     this.store.events.onPlayEnd = props.onPlayEnd;
     this.store.events.onDataChange = props.onDataChange;
-    this.store.keyboardPiano = props.keyboardPiano ?? true;
+    if (isBoolean(props.keyboardPiano)) {
+      this.store.keyboardPiano = props.keyboardPiano;
+    }
 
     if (props.modelRef) {
       const ref = {
@@ -89,6 +94,11 @@ class _Roll extends React.Component<_RollProps> {
       instrument: store.currentTrack,
       notes: [],
     };
+    const scaleNames =
+      store.scale &&
+      scale(store.scale)
+        .map((i: string) => i.slice(0, -1))
+        .slice(0, -1);
 
     return (
       <RollContext.Provider value={store}>
@@ -136,6 +146,8 @@ class _Roll extends React.Component<_RollProps> {
                 keyboardPiano: this.props.keyboardPiano,
                 instrument: store.currentTrack,
                 notes: currentTrackData.notes ?? [],
+                scales: scaleNames,
+                scaleType: store.scale?.type,
                 range: currentTrackData.range,
                 activeKeys: store.activeKeys[store.currentTrack],
                 key: store.currentTrack,
@@ -164,7 +176,6 @@ const storeUpdaterHOC = (InnerComponent: typeof React.Component) => {
           _.pick(this.storeRef.current, OBSERVER_FIELDS)
         )
       ) {
-        debugger
         console.log("[moa-roll] store synced props");
         (this.storeRef.current as RollStore).setData(nextProps.data);
       }
@@ -175,7 +186,6 @@ const storeUpdaterHOC = (InnerComponent: typeof React.Component) => {
           _.pick(this.props, CHANGE_PROPS)
         )
       ) {
-        debugger
         return true;
       }
 

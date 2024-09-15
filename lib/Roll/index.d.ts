@@ -8,6 +8,7 @@ type RollProps = {
         octive?: boolean;
         length?: boolean;
         clear?: boolean;
+        bpm?: boolean;
     };
     keyboardPiano?: boolean;
     width?: number;
