@@ -5,3 +5,8 @@ export type Note = {
 };
 
 export type NoteOnlyValue = Omit<Note, "time" | "duration">;
+
+export enum PITCH_MOD {
+  SHARP = "sharp",
+  FLAT = "flat",
+}

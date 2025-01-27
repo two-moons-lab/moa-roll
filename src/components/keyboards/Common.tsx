@@ -1,6 +1,6 @@
 import React from "react";
 import { Note } from "typings/common";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import classNames from "classnames";
 import { getFullNoteStr, separateNoteStr } from "../../utils/note";
 import { observer } from "mobx-react";
@@ -11,7 +11,7 @@ import { ITEM_WIDTH } from "./constants";
 import { isMobile } from "utils/env";
 import { singNameMap } from "rad.js";
 
-const getSingleNoteStr = (str: string) => {
+const getSingleNoteStr = (str: string, mod = "flat") => {
   if (str.includes("/")) return str.split("/")[0];
   else return str;
 };
@@ -230,7 +230,8 @@ export const CommonKeyboard: React.FC<{
                 className={classNames(
                   styles.key,
                   activeKeys.includes(keyName) && styles["key--active"],
-                  keyName.length === 7 && styles["key--pitch"]
+                  (keyName.includes("b") || keyName.includes("#")) &&
+                    styles["key--pitch"]
                 )}
               >
                 {keyboardPiano ? (

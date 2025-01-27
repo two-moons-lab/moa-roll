@@ -1,4 +1,6 @@
+import { isUndefined } from "lodash";
 import { NOISE_VALUES } from "../constants";
+import { PITCH_MOD } from "typings/common";
 // note相关命名规范
 // noteStr: 形如 'C4#/D5b'
 // noteValue: 原始的用户输入的noteValue，形如 'C4#'
@@ -96,7 +98,11 @@ export const composeNoteStr = (name: string, octive: string) => {
   } else return name + octive;
 };
 
-export const genKeys = (noteValues: string[], range?: string[]) => {
+export const genKeys = (
+  noteValues: string[],
+  range?: string[],
+  mod: PITCH_MOD = PITCH_MOD.SHARP
+) => {
   let re: string[] = [];
 
   if (noteValues.length === 0 && !range) return [];
@@ -143,7 +149,17 @@ export const genKeys = (noteValues: string[], range?: string[]) => {
     re.push(...tailNotes);
   }
 
-  return re.reverse();
+  return re.reverse().map((str) => {
+    const retainIndexMap = {
+      sharp: 0,
+      flat: 1,
+    };
+    if (str.includes("/")) {
+      if (!isUndefined(retainIndexMap[mod])) {
+        return str.split("/")[retainIndexMap[mod]];
+      } else return str;
+    } else return str;
+  });
 };
 
 export function compareNoteStr(note1: string, note2: string) {

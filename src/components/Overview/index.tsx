@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import * as PIXI from "pixi.js";
 import { RollContext } from "Roll";
 import { ITEM_WIDTH } from "components/keyboards/constants";
