@@ -1,5 +1,5 @@
 import React, { createContext, useEffect } from "react";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import { RollState, RollStore, Track } from "./Store";
 import { observer } from "mobx-react";
 import classNames from "classnames";
@@ -10,6 +10,7 @@ import { scale } from "rad.js";
 
 export const RollContext = createContext<RollStore>(null);
 
+console.log({styles})
 type RollProps = {
   data?: Partial<RollState>;
   showController?: boolean;
