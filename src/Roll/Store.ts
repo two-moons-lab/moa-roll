@@ -200,7 +200,7 @@ export class RollStore implements RollState {
 
   @action
   play = () => {
-    this.stop(false);
+    if (this.status === "playing") this.stop(false);
     // if (this.status === "playing") return;
     this.start();
 
