@@ -1,5 +1,5 @@
 import React from "react";
-import { Note } from "typings/common";
+import { Note, PITCH_MOD } from "typings/common";
 import styles from "./index.module.less";
 import classNames from "classnames";
 import { getFullNoteStr, separateNoteStr } from "../../utils/note";
@@ -10,10 +10,18 @@ import { KeyboardStore, genKeysFnMap } from "./Store";
 import { ITEM_WIDTH } from "./constants";
 import { isMobile } from "utils/env";
 import { singNameMap } from "rad.js";
+import _ from "lodash";
 
-const getSingleNoteStr = (str: string, mod = "flat") => {
-  if (str.includes("/")) return str.split("/")[0];
-  else return str;
+const getSingleNoteStr = (str: string, mod: PITCH_MOD = PITCH_MOD.SHARP) => {
+  const retainIndexMap = {
+    sharp: 0,
+    flat: 1,
+  };
+  if (str.includes("/")) {
+    if (!_.isUndefined(retainIndexMap[mod])) {
+      return str.split("/")[retainIndexMap[mod]];
+    } else return str;
+  } else return str;
 };
 
 export const CommonKeyboard: React.FC<{
@@ -241,7 +249,7 @@ export const CommonKeyboard: React.FC<{
                 ) : (
                   <div />
                 )}
-                <span>{keyName}</span>
+                <span>{getSingleNoteStr(keyName)}</span>
                 <span
                   style={{
                     fontSize: 10,
