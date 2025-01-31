@@ -1,6 +1,6 @@
 {
   "name": "moa-roll",
-  "version": "1.2.62",
+  "version": "1.2.64",
   "description": "> TODO: description",
   "author": "anhaohui.ahh <anhaohui.ahh@antgroup.com>",
   "homepage": "",
@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
+    "dev": "yarn parcel example/index.html",
     "build": "rollup -c",
     "watch": "rollup -cw",
     "output": "node output.js"
