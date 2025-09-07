@@ -22,14 +22,14 @@ export class Drum implements BaseInstrument {
       },
       snare: {
         toneInstance: new NoiseSynth({
-          volume: 16,
+          volume: 9,
           noise: {
             // 'white' | 'pink' | 'brown';
             type: "pink",
             playbackRate: 1,
           },
           envelope: {
-            attack: 0.001,
+            attack: 0.004,
             decay: 0.15,
             sustain: 0,
             release: 0.03,
